@@ -32,6 +32,40 @@ CYD28_TouchR touch(CYD28_DISPLAY_HOR_RES_MAX, CYD28_DISPLAY_VER_RES_MAX);
 #endif
 #endif
 
+#if defined(USE_TFT_eSPI_TOUCH)
+static void mapTouchCoordinates(TouchPoint &point) {
+    const int referenceWidth = (ROTATION & 1) ? TFT_HEIGHT : TFT_WIDTH;
+    const int referenceHeight = (ROTATION & 1) ? TFT_WIDTH : TFT_HEIGHT;
+    const int currentWidth = tft.width();
+    const int currentHeight = tft.height();
+
+    // getTouch scales its calibrated axes to the current dimensions without rotating them.
+    int x = point.x * (referenceWidth - 1) / (currentWidth - 1);
+    int y = point.y * (referenceHeight - 1) / (currentHeight - 1);
+    switch ((bruceConfigPins.rotation - ROTATION + 4) % 4) {
+        case 1: {
+            int tmp = x;
+            x = y;
+            y = referenceWidth - 1 - tmp;
+            break;
+        }
+        case 2:
+            x = referenceWidth - 1 - x;
+            y = referenceHeight - 1 - y;
+            break;
+        case 3: {
+            int tmp = x;
+            x = referenceHeight - 1 - y;
+            y = tmp;
+            break;
+        }
+    }
+
+    point.x = x;
+    point.y = y;
+}
+#endif
+
 /***************************************************************************************
 ** Function name: _setup_gpio()
 ** Location: main.cpp
@@ -106,6 +140,8 @@ void _post_setup_gpio() {
         caldata.close();
     }
     tft.setTouch(calData);
+    tft.setRotation(bruceConfigPins.rotation);
+    tft.setRotation(bruceConfigPins.rotation);
 #endif
 
     // Brightness control must be initialized after tft in this case @Pirata
@@ -242,7 +278,9 @@ void InputHandler(void) {
         if (touch.touched()) {
             auto t = touch.getPointScaled();
 #endif
-#if !defined(TOUCH_GT911_I2C)
+#if defined(USE_TFT_eSPI_TOUCH)
+            mapTouchCoordinates(t);
+#elif !defined(TOUCH_GT911_I2C)
             // Serial.printf("\nRAW: Touch Pressed on x=%d, y=%d",t.x, t.y);
             if (bruceConfigPins.rotation == 3) {
                 t.y = (tftHeight + 20) - t.y;
