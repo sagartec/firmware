@@ -56,7 +56,7 @@ void Amiibo::displayBanner(AppMode mode) {
         default: padprintln(""); break;
     }
 
-    tft.setTextSize(FP);
+    tft.setTextSize(BRUCE_FONT_SMALL);
     padprintln("");
 }
 

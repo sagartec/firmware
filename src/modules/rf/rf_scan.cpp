@@ -817,7 +817,7 @@ String rfReceiveSignal(float frequency, int max_loops, bool raw, bool headless) 
     if (!headless) {
         drawMainBorder();
         tft.setCursor(10, 28);
-        tft.setTextSize(FP);
+        tft.setTextSize(BRUCE_FONT_SMALL);
         tft.println("Waiting for a " + String(frequency) + " MHz " + "signal.");
     }
 

@@ -23,7 +23,7 @@
 
 namespace {
 void displaySmallErrorToast(const String &txt) {
-    constexpr int textSize = FP;
+    constexpr int textSize = BRUCE_FONT_SMALL;
     int boxWidth = txt.length() * LW * textSize + 18;
     if (boxWidth > tftWidth - 20) boxWidth = tftWidth - 20;
     int boxHeight = LH * textSize + 10;
@@ -226,7 +226,7 @@ void TagOMatic::display_banner() {
         case SAVE_MODE: printSubtitle("SAVE MODE"); break;
     }
 
-    tft.setTextSize(FP);
+    tft.setTextSize(BRUCE_FONT_SMALL);
     padprintln("");
     tft.setTextColor(getColorVariation(bruceConfig.priColor), bruceConfig.bgColor);
     padprintln("Press [OK] to change mode.");
